@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unit Converter</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Unit Converter</h1>
+        <form method="POST">
+            <label for="source_measurement">Source Measurement:</label>
+            <select name="source_measurement" id="source_measurement">
+                <option value="Weight">Weight</option>
+                <option value="Liquid">Liquid</option>
+            </select>
+
+            <label for="target_measurement">Target Measurement:</label>
+            <select name="target_measurement" id="target_measurement">
+                <!-- Options will be populated dynamically -->
+            </select>
+
+            <label for="value">Value:</label>
+            <input type="text" name="value" id="value" required>
+            
+            <input type="submit" value="Convert">
+        </form>
+
+        {% if result %}
+        <h2>Result:</h2>
+        <p>{{ result }}</p>
+        {% endif %}
+    </div>
+    <script>
+        const sourceMeasurement = document.getElementById('source_measurement');
+        const targetMeasurement = document.getElementById('target_measurement');
+        const conversionData = {{ conversion_data|tojson|safe }};
+        
+        sourceMeasurement.addEventListener('change', function() {
+            const selectedSource = sourceMeasurement.value;
+            targetMeasurement.innerHTML = '';
+
+            for (const target in conversionData[selectedSource]) {
+                const option = document.createElement('option');
+                option.value = target;
+                option.textContent = target;
+                targetMeasurement.appendChild(option);
+            }
+        });
+
+        const initialSource = sourceMeasurement.value;
+        for (const target in conversionData[initialSource]) {
+            const option = document.createElement('option');
+            option.value = target;
+            option.textContent = target;
+            targetMeasurement.appendChild(option);
+        }
+    </script>
+</body>
+</html>
